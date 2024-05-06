@@ -4,10 +4,32 @@ import "swiper/css/pagination";
 import Image from "next/image";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const CardSlider = () => {
   const swiperRef = useRef(null);
+  
+  const [slidesPerView, setSlidesPerView] = useState(4); // Default to 4 cards
+
+  useEffect(() => {
+    const handleResize = () => {
+      // Adjust the number of slides per view based on the window width
+      if (window.innerWidth < 640) {
+        setSlidesPerView(2); // Two cards on mobile view
+      } else {
+        setSlidesPerView(4); // Four cards on larger screens
+      }
+    };
+
+    handleResize(); // Call the function on initial render
+    window.addEventListener("resize", handleResize); // Listen for window resize events
+
+    return () => {
+      window.removeEventListener("resize", handleResize); // Cleanup
+    };
+  }, []);
+
+
   const cards = [
     {
       id: 1,
@@ -63,7 +85,7 @@ const CardSlider = () => {
     <Swiper
       ref={swiperRef}
       className={`mt-5 mb-10`}
-      slidesPerView={4}
+      slidesPerView={slidesPerView}
       spaceBetween={16}
       navigation={{
         nextEl: ".next",
